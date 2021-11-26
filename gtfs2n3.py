@@ -321,9 +321,9 @@ class Converter:
     
     def get_triples(self, entry_name: str = None, save_original: bool = False):
         if entry_name is None:
-            entry_name = 'test'
+            entry_name = ''
 
-        file_path = self.output_directory + os.sep + entry_name + '_publication.gtfs'
+        file_path = self.output_directory + os.sep + entry_name + 'public.zip'
         print(file_path)
         '''
         f = open(file_path, 'wb+')
