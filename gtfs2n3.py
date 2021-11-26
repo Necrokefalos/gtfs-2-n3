@@ -43,10 +43,11 @@ class Converter:
         os.makedirs(output_dir, exist_ok=True)
         self.output_directory = output_dir
         print(self.output_directory)
-
+    '''
     def __str__(self):
         return """Source URL: %s\n Publication Name: %s\n Publication Key: %s\n Output directory: %s""" \
                % (self.chouette_url, self.publication_api, self.publication_api_key, self.output_directory)
+    '''
 
     def set_url(self, url: str):
         self.chouette_url = url
