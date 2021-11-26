@@ -321,9 +321,10 @@ class Converter:
     
     def get_triples(self, entry_name: str = None, save_original: bool = False):
         if entry_name is None:
-            entry_name = 'hello'
+            entry_name = 'test'
 
         file_path = self.output_directory + os.sep + entry_name + '_publication.gtfs'
+        print(file_path)
         '''
         f = open(file_path, 'wb+')
         f.write(response)
@@ -385,17 +386,17 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output-directory', type=str, default=None,
                         help='The output directory of the triples. Default is inside current directory: '
                              + os.path.curdir + os.sep + 'output')
-    '''
     parser.add_argument('-s', '--save', action='store_true',
                         help='This flag can be userd to preserve the original GTFS export inside OUTPUT_FOLDER')
     parser.add_argument('-e', '--entry-name', type=str, default=None,
                         help='The name for the extracted data entries. Dafault API_SHORT_NAME')
-    '''
+    
     args = parser.parse_args()
     print(args)
 
     converter = Converter(args.output_directory)
     print(converter)
+    converter.get_triples(args.entry_name, args.save)
     '''
     publisher = ChouettePublisher(args.url, args.api_namespace, args.api_key, args.output_directory)
     print(publisher)
