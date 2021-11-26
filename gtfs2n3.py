@@ -16,13 +16,13 @@ from zipfile import ZipFile
 import pandas as pd
 import os, pytz, datetime, argparse
 
-import requests
+#import requests
 
-import json, flask, sys
+import json, sys, #flask
 
  
 class ChouettePublisher:
-    _api_directory = '/api/v1/datas/'
+    #_api_directory = '/api/v1/datas/'
 
     _route_type = {
         0: "<http://vocab.gtfs.org/terms#LightRail>",
@@ -353,7 +353,7 @@ class ChouettePublisher:
 
         return self._extract_triple(entry_name, file_path, save_original)
 
-
+'''
 app = flask.Flask(__name__)
 
 os.environ["FLASK_APP"]= __name__ + ".py"
@@ -389,6 +389,7 @@ def chouette2n3():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080)
+'''
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Interface for connect to a Enroute Chouette application and export'
@@ -410,6 +411,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(args)
 
+    '''
     publisher = ChouettePublisher(args.url, args.api_namespace, args.api_key, args.output_directory)
     print(publisher)
     publisher.get_triples(args.entry_name, args.save)
+    '''
