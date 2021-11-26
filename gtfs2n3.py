@@ -21,7 +21,7 @@ import os, pytz, datetime, argparse
 import json, sys #flask
 
  
-class ChouettePublisher:
+class Converter:
     #_api_directory = '/api/v1/datas/'
 
     _route_type = {
@@ -35,16 +35,14 @@ class ChouettePublisher:
         7: "<http://vocab.gtfs.org/terms#Funicular>"
     }
 
-    def __init__(self, input_file: str = './', output_dir: str = None):
-        self.chouette_url = url
-        self.publication_api = publication_api_namespace
-        self.publication_api_key = publication_api_key
+    def __init__(self, output_dir: str = None):
         if output_dir is None:
             output_dir = os.getcwd() + os.sep + 'output'
         else:
             output_dir = os.path.abspath(output_dir)
         os.makedirs(output_dir, exist_ok=True)
         self.output_directory = output_dir
+        print(self.output_directory)
 
     def __str__(self):
         return """Source URL: %s\n Publication Name: %s\n Publication Key: %s\n Output directory: %s""" \
@@ -402,9 +400,6 @@ if __name__ == '__main__':
                         help='The API key, can be created in Settings > Publication APIs inside Chouette')
     parser.add_argument('url', metavar='CHOUETTE_URL', default='chouette.snap4city.org', type=str, nargs='?',
                         help='The URL of the publications source. Default connects to "chouette.snap4city.org"')
-    parser.add_argument('-i', '--input-file', type=str, default=None,
-                        help='The input zip file. Default is inside current directory: '
-                             + os.path.curdir + os.sep + 'output')
     '''
     parser.add_argument('-o', '--output-directory', type=str, default=None,
                         help='The output directory of the triples. Default is inside current directory: '
@@ -416,9 +411,10 @@ if __name__ == '__main__':
                         help='The name for the extracted data entries. Dafault API_SHORT_NAME')
     '''
     args = parser.parse_args()
-    print(args, 1)
+    print(args)
 
-    #reader = ChouettePublisher()
+    converter = Converter(args.output_directory)
+    print(converter)
     '''
     publisher = ChouettePublisher(args.url, args.api_namespace, args.api_key, args.output_directory)
     print(publisher)
