@@ -330,7 +330,7 @@ class ChouettePublisher:
 
         if not save_original:
             os.remove(file_path)
-
+    '''
     def get_triples(self, entry_name: str = None, save_original: bool = False):
         if entry_name is None:
             entry_name = self.publication_api
@@ -351,6 +351,7 @@ class ChouettePublisher:
         f.close()
 
         return self._extract_triple(entry_name, file_path, save_original)
+    '''
 
 '''
 app = flask.Flask(__name__)
@@ -411,7 +412,7 @@ if __name__ == '__main__':
     parser.add_argument('-e', '--entry-name', type=str, default=None,
                         help='The name for the extracted data entries. Dafault API_SHORT_NAME')
     args = parser.parse_args()
-    print(args)
+    print(args, 1)
 
     #reader = ChouettePublisher()
     '''
