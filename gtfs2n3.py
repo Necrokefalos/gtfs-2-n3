@@ -394,6 +394,7 @@ if __name__ == "__main__":
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Interface for connect to a Enroute Chouette application and export'
                                                  'publications in triples format')
+    '''
     parser.add_argument('api_namespace', metavar='API_SHORT_NAME', type=str,
                         help='The short name of the publications API (can be found in '
                              'Settings > Publications inside Chouette)')
@@ -404,13 +405,16 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--input-file', type=str, default=None,
                         help='The input zip file. Default is inside current directory: '
                              + os.path.curdir + os.sep + 'output')
+    '''
     parser.add_argument('-o', '--output-directory', type=str, default=None,
                         help='The output directory of the triples. Default is inside current directory: '
                              + os.path.curdir + os.sep + 'output')
+    '''
     parser.add_argument('-s', '--save', action='store_true',
                         help='This flag can be userd to preserve the original GTFS export inside OUTPUT_FOLDER')
     parser.add_argument('-e', '--entry-name', type=str, default=None,
                         help='The name for the extracted data entries. Dafault API_SHORT_NAME')
+    '''
     args = parser.parse_args()
     print(args, 1)
 
