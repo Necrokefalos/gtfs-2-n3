@@ -322,7 +322,7 @@ class Converter:
             entry_name = 'Bus_Stop'
 
         # replace string for file_path 'public.zip' according to your file
-        file_path = self.output_directory + os.sep + entry_name + 'public.zip'
+        file_path = self.output_directory + os.sep + 'public.zip'
 
         return self._extract_triple(entry_name, file_path, save_original)
     
