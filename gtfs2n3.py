@@ -243,8 +243,10 @@ class Converter:
         for i in range(len(routes['route_id'])):
             first_term = "<http://www.disit.org/km4city/resource/" + entry_name + "_Route_" + str(
                 routes["route_id"][i]) + ">"
-            agency_first_term = "<http://www.disit.org/km4city/resource/" + entry_name + "_Agency_" + \
-                                str(routes["agency_id"][i]) + ">"
+            # replaced this since there is no agency_id in route files and there is onle one agency available
+            #agency_first_term = "<http://www.disit.org/km4city/resource/" + entry_name + "_Agency_" + \
+            #                    str(routes["agency_id"][i]) + ">"
+            agency_first_term = "<http://www.disit.org/km4city/resource/" + entry_name + "_Agency_OASA >"
             f.write(first_term + """ <http://purl.org/dc/terms/identifier> "%s_Route_%s" . \n"""
                     % (entry_name, str(routes['route_id'][i])))
             f.write("""%s <http://vocab.gtfs.org/terms#color> "%s" .\n""" % (first_term, routes['route_color'][i]))
@@ -276,12 +278,12 @@ class Converter:
         with ZipFile(file_path, 'r') as zip_obj:
             zip_obj.extractall(self.output_directory)
         self._extract_agencies_triples(entry_name)
-        #self._extract_calendar_dates_triples(entry_name)
-        #self._extract_stop_triples(entry_name)
-        #self._extract_stop_times_triples(entry_name)
-        #self._extract_trips_triples(entry_name)
-        #self._extract_shapes_triples(entry_name)
-        #self._extract_routes_triples(entry_name)
+        self._extract_calendar_dates_triples(entry_name)
+        self._extract_stop_triples(entry_name)
+        self._extract_stop_times_triples(entry_name)
+        self._extract_trips_triples(entry_name)
+        self._extract_shapes_triples(entry_name)
+        self._extract_routes_triples(entry_name)
 
         data_version = """<http://www.disit.org/km4city/resource/%s> <http://purl.org/dc/terms/date> "%s"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
         """ % (entry_name, datetime.datetime.now(pytz.utc).isoformat())
