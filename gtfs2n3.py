@@ -22,7 +22,6 @@ import json, sys #flask
 
  
 class Converter:
-    #_api_directory = '/api/v1/datas/'
 
     _route_type = {
         0: "<http://vocab.gtfs.org/terms#LightRail>",
@@ -47,15 +46,6 @@ class Converter:
     def __str__(self):
         return """Output directory: %s""" \
                % (self.output_directory)
-
-    def set_url(self, url: str):
-        self.chouette_url = url
-
-    def set_publication_name(self, name: str):
-        self.publication_api = name
-
-    def set_publication_key(self, key: str):
-        self.publication_api_key = key
 
     def set_output_directory(self, output_dir: str = None):
         if output_dir is None:
@@ -328,28 +318,19 @@ class Converter:
 
         if not save_original:
             os.remove(file_path)
-    '''
+    
     def get_triples(self, entry_name: str = None, save_original: bool = False):
         if entry_name is None:
-            entry_name = self.publication_api
+            entry_name = 'hello'
 
-        url = self.chouette_url + self._api_directory + self.publication_api + "/gtfs.zip"
-        print(url)
-
-        payload = {}
-        headers = {
-            'Authorization': 'Token token=' + self.publication_api_key
-        }
-
-        response = requests.request("GET", url, headers=headers, data=payload).content
         file_path = self.output_directory + os.sep + entry_name + '_publication.gtfs'
-
+        '''
         f = open(file_path, 'wb+')
         f.write(response)
         f.close()
-
+        '''
         return self._extract_triple(entry_name, file_path, save_original)
-    '''
+    
 
 '''
 app = flask.Flask(__name__)
