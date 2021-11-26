@@ -237,6 +237,8 @@ class Converter:
         f.close()
 
     def _extract_routes_triples(self, entry_name):
+        # added _agency_id since there is not a column called ageny_id in routes.csv file and there is only one agency in my case
+        _agency_id = 'OASA'
         routes = pd.read_csv(self.output_directory + os.sep + "routes.txt", delimiter=",", low_memory=True)
         print("Write triples for routes")
         f = open(self.output_directory + os.sep + "routes.n3", "w+")
@@ -246,7 +248,8 @@ class Converter:
             # replaced this since there is no agency_id in route files and there is onle one agency available
             #agency_first_term = "<http://www.disit.org/km4city/resource/" + entry_name + "_Agency_" + \
             #                    str(routes["agency_id"][i]) + ">"
-            agency_first_term = "<http://www.disit.org/km4city/resource/" + entry_name + "_Agency_OASA >"
+            agency_first_term = "<http://www.disit.org/km4city/resource/" + entry_name + "_Agency_" + \
+                                _agency_id + ">"
             f.write(first_term + """ <http://purl.org/dc/terms/identifier> "%s_Route_%s" . \n"""
                     % (entry_name, str(routes['route_id'][i])))
             f.write("""%s <http://vocab.gtfs.org/terms#color> "%s" .\n""" % (first_term, routes['route_color'][i]))
@@ -257,8 +260,10 @@ class Converter:
             f.write("""%s <http://vocab.gtfs.org/terms#shortName> "%s" . \n""" % (first_term,
                                                                                   str(routes['route_short_name'][
                                                                                           i]).replace('"', r'\"')))
+            #f.write("""%s <http://purl.org/dc/terms/identifier> "%s_Agency_%s" . \n""" % (agency_first_term, entry_name,
+            #                                                                              str(routes['agency_id'][i])))
             f.write("""%s <http://purl.org/dc/terms/identifier> "%s_Agency_%s" . \n""" % (agency_first_term, entry_name,
-                                                                                          str(routes['agency_id'][i])))
+                                                                                          _agency_id))
             f.write("""%s <http://vocab.gtfs.org/terms#agency> %s .\n""" % (first_term, agency_first_term))
             f.write("""%s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://vocab.gtfs.org/terms#Agency> .\n"""
                     % agency_first_term)
