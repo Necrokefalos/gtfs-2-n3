@@ -18,7 +18,7 @@ import os, pytz, datetime, argparse
 
 #import requests
 
-import json, sys, #flask
+import json, sys #flask
 
  
 class ChouettePublisher:
@@ -35,8 +35,7 @@ class ChouettePublisher:
         7: "<http://vocab.gtfs.org/terms#Funicular>"
     }
 
-    def __init__(self, url: str = "chouette.snap4city.org", publication_api_namespace: str = None,
-                 publication_api_key: str = None, output_dir: str = None):
+    def __init__(self, input_file: str = './', output_dir: str = None):
         self.chouette_url = url
         self.publication_api = publication_api_namespace
         self.publication_api_key = publication_api_key
@@ -401,6 +400,9 @@ if __name__ == '__main__':
                         help='The API key, can be created in Settings > Publication APIs inside Chouette')
     parser.add_argument('url', metavar='CHOUETTE_URL', default='chouette.snap4city.org', type=str, nargs='?',
                         help='The URL of the publications source. Default connects to "chouette.snap4city.org"')
+    parser.add_argument('-i', '--input-file', type=str, default=None,
+                        help='The input zip file. Default is inside current directory: '
+                             + os.path.curdir + os.sep + 'output')
     parser.add_argument('-o', '--output-directory', type=str, default=None,
                         help='The output directory of the triples. Default is inside current directory: '
                              + os.path.curdir + os.sep + 'output')
@@ -411,6 +413,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(args)
 
+    #reader = ChouettePublisher()
     '''
     publisher = ChouettePublisher(args.url, args.api_namespace, args.api_key, args.output_directory)
     print(publisher)
