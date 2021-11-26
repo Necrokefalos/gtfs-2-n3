@@ -11,7 +11,10 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-# author: 
+# author: DISIT - S4C - https://github.com/disit/snap4city/blob/master/Snap4CityGTFS/chouette-gtfs-n3.py
+# modified by: Giorgos Zoutis aka Necrokefalos
+# version: v0.1
+
 from zipfile import ZipFile
 import pandas as pd
 import os, pytz, datetime, argparse
@@ -288,7 +291,7 @@ class Converter:
 
         if os.path.exists(self.output_directory + os.sep + "agency.txt"):
             os.remove(self.output_directory + os.sep + "agency.txt")
-        '''
+        
         if os.path.exists(self.output_directory + os.sep + "calendar_dates.txt"):
             os.remove(self.output_directory + os.sep + "calendar_dates.txt")
 
@@ -312,14 +315,13 @@ class Converter:
 
         if os.path.exists(self.output_directory + os.sep + "trips.txt"):
             os.remove(self.output_directory + os.sep + "trips.txt")
-        '''
 
         if not save_original:
             os.remove(file_path)
     
     def get_triples(self, entry_name: str = None, save_original: bool = False):
         if entry_name is None:
-            entry_name = 'Bus_Stop'
+            entry_name = 'Bus_OASA'
 
         # replace string for file_path 'public.zip' according to your file
         file_path = self.output_directory + os.sep + 'public.zip'
@@ -334,9 +336,9 @@ if __name__ == '__main__':
                         help='The output directory of the triples. Default is inside current directory: '
                              + os.path.curdir + os.sep + 'output')
     parser.add_argument('-s', '--save', action='store_true',
-                        help='This flag can be userd to preserve the original GTFS export inside OUTPUT_FOLDER')
+                        help='This flag can be used to preserve the original GTFS export inside OUTPUT_FOLDER')
     parser.add_argument('-e', '--entry-name', type=str, default=None,
-                        help='The name for the extracted data entries. Dafault API_SHORT_NAME')
+                        help='The name for the extracted data entries. Dafault Bus_OASA')
     
     args = parser.parse_args()
     #print(args)
