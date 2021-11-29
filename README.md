@@ -1,6 +1,7 @@
 # 🚏 gtfs-2-n3
 
-## Custom modified solution in order to convert GTFS files to .n3
+## Modified solution in order to convert GTFS files to .n3 to be used in S4C.
+Original script: https://github.com/disit/snap4city/blob/master/Snap4CityGTFS/chouette-gtfs-n3.py
 
 ### Requirements: ###
 * python 3.10
