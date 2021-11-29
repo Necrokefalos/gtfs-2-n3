@@ -11,18 +11,18 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-   
+# author: DISIT - S4C - https://github.com/disit/snap4city/blob/master/Snap4CityGTFS/chouette-gtfs-n3.py
+# modified by: Giorgos Zoutis aka Necrokefalos
+# version: v0.1
+
 from zipfile import ZipFile
 import pandas as pd
 import os, pytz, datetime, argparse
 
-import requests
-
-import json, flask, sys
+import json, sys
 
  
-class ChouettePublisher:
-    _api_directory = '/api/v1/datas/'
+class Converter:
 
     _route_type = {
         0: "<http://vocab.gtfs.org/terms#LightRail>",
@@ -35,30 +35,17 @@ class ChouettePublisher:
         7: "<http://vocab.gtfs.org/terms#Funicular>"
     }
 
-    def __init__(self, url: str = "chouette.snap4city.org", publication_api_namespace: str = None,
-                 publication_api_key: str = None, output_dir: str = None):
-        self.chouette_url = url
-        self.publication_api = publication_api_namespace
-        self.publication_api_key = publication_api_key
+    def __init__(self, output_dir: str = None):
         if output_dir is None:
             output_dir = os.getcwd() + os.sep + 'output'
         else:
             output_dir = os.path.abspath(output_dir)
         os.makedirs(output_dir, exist_ok=True)
         self.output_directory = output_dir
-
+    
     def __str__(self):
-        return """Source URL: %s\n Publication Name: %s\n Publication Key: %s\n Output directory: %s""" \
-               % (self.chouette_url, self.publication_api, self.publication_api_key, self.output_directory)
-
-    def set_url(self, url: str):
-        self.chouette_url = url
-
-    def set_publication_name(self, name: str):
-        self.publication_api = name
-
-    def set_publication_key(self, key: str):
-        self.publication_api_key = key
+        return """Output directory: %s""" \
+               % (self.output_directory)
 
     def set_output_directory(self, output_dir: str = None):
         if output_dir is None:
@@ -250,14 +237,19 @@ class ChouettePublisher:
         f.close()
 
     def _extract_routes_triples(self, entry_name):
+        # added _agency_id since there is not a column called ageny_id in routes.csv file and there is only one agency in my case
+        _agency_id = 'OASA'
         routes = pd.read_csv(self.output_directory + os.sep + "routes.txt", delimiter=",", low_memory=True)
         print("Write triples for routes")
         f = open(self.output_directory + os.sep + "routes.n3", "w+")
         for i in range(len(routes['route_id'])):
             first_term = "<http://www.disit.org/km4city/resource/" + entry_name + "_Route_" + str(
                 routes["route_id"][i]) + ">"
+            # replaced this since there is no agency_id in route files and there is onle one agency available
+            #agency_first_term = "<http://www.disit.org/km4city/resource/" + entry_name + "_Agency_" + \
+            #                    str(routes["agency_id"][i]) + ">"
             agency_first_term = "<http://www.disit.org/km4city/resource/" + entry_name + "_Agency_" + \
-                                str(routes["agency_id"][i]) + ">"
+                                _agency_id + ">"
             f.write(first_term + """ <http://purl.org/dc/terms/identifier> "%s_Route_%s" . \n"""
                     % (entry_name, str(routes['route_id'][i])))
             f.write("""%s <http://vocab.gtfs.org/terms#color> "%s" .\n""" % (first_term, routes['route_color'][i]))
@@ -268,8 +260,10 @@ class ChouettePublisher:
             f.write("""%s <http://vocab.gtfs.org/terms#shortName> "%s" . \n""" % (first_term,
                                                                                   str(routes['route_short_name'][
                                                                                           i]).replace('"', r'\"')))
+            #f.write("""%s <http://purl.org/dc/terms/identifier> "%s_Agency_%s" . \n""" % (agency_first_term, entry_name,
+            #                                                                              str(routes['agency_id'][i])))
             f.write("""%s <http://purl.org/dc/terms/identifier> "%s_Agency_%s" . \n""" % (agency_first_term, entry_name,
-                                                                                          str(routes['agency_id'][i])))
+                                                                                          _agency_id))
             f.write("""%s <http://vocab.gtfs.org/terms#agency> %s .\n""" % (first_term, agency_first_term))
             f.write("""%s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://vocab.gtfs.org/terms#Agency> .\n"""
                     % agency_first_term)
@@ -304,7 +298,7 @@ class ChouettePublisher:
 
         if os.path.exists(self.output_directory + os.sep + "agency.txt"):
             os.remove(self.output_directory + os.sep + "agency.txt")
-
+        
         if os.path.exists(self.output_directory + os.sep + "calendar_dates.txt"):
             os.remove(self.output_directory + os.sep + "calendar_dates.txt")
 
@@ -331,85 +325,31 @@ class ChouettePublisher:
 
         if not save_original:
             os.remove(file_path)
-
+    
     def get_triples(self, entry_name: str = None, save_original: bool = False):
         if entry_name is None:
-            entry_name = self.publication_api
+            entry_name = 'Bus_OASA'
 
-        url = self.chouette_url + self._api_directory + self.publication_api + "/gtfs.zip"
-        print(url)
-
-        payload = {}
-        headers = {
-            'Authorization': 'Token token=' + self.publication_api_key
-        }
-
-        response = requests.request("GET", url, headers=headers, data=payload).content
-        file_path = self.output_directory + os.sep + entry_name + '_publication.gtfs'
-
-        f = open(file_path, 'wb+')
-        f.write(response)
-        f.close()
+        # replace string for file_path 'public.zip' according to your file
+        file_path = self.output_directory + os.sep + 'public.zip'
 
         return self._extract_triple(entry_name, file_path, save_original)
-
-
-app = flask.Flask(__name__)
-
-os.environ["FLASK_APP"]= __name__ + ".py"
-
-@app.route('/chouette2n3', methods=['GET', 'POST'])
-def chouette2n3():
-    try:
-        if flask.request.method == 'GET':
-            api_namespace = flask.request.values.get('api_namespace')
-            if api_namespace==None:
-                return "missing api_namespace"
-            api_key = flask.request.values.get('api_key')
-            if api_key==None:
-                return "missing api_key"
-            chouette_url = flask.request.values.get('chouette_url')
-            if chouette_url==None:
-                chouette_url="https://chouette.enroute.mobi"
-            entry_name = flask.request.values.get('entry_name')
-            if entry_name==None:
-                entryname=api_namespace
-
-            print("params: ",api_namespace," ",api_key," ",chouette_url," ",entry_name)
-
-            publisher = ChouettePublisher(chouette_url, api_namespace, api_key, '/data/gtfs-triples/'+api_namespace)
-            print(publisher)
-            publisher.get_triples(entry_name, True)
-
-            return "done"
-    except Exception as e:
-        print ("Error: "+str(e))
-        message = "Error: "+str(e);
-        return message
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080)
+    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Interface for connect to a Enroute Chouette application and export'
                                                  'publications in triples format')
-    parser.add_argument('api_namespace', metavar='API_SHORT_NAME', type=str,
-                        help='The short name of the publications API (can be found in '
-                             'Settings > Publications inside Chouette)')
-    parser.add_argument('api_key', metavar='API_KEY', type=str,
-                        help='The API key, can be created in Settings > Publication APIs inside Chouette')
-    parser.add_argument('url', metavar='CHOUETTE_URL', default='chouette.snap4city.org', type=str, nargs='?',
-                        help='The URL of the publications source. Default connects to "chouette.snap4city.org"')
     parser.add_argument('-o', '--output-directory', type=str, default=None,
                         help='The output directory of the triples. Default is inside current directory: '
                              + os.path.curdir + os.sep + 'output')
     parser.add_argument('-s', '--save', action='store_true',
-                        help='This flag can be userd to preserve the original GTFS export inside OUTPUT_FOLDER')
+                        help='This flag can be used to preserve the original GTFS export inside OUTPUT_FOLDER')
     parser.add_argument('-e', '--entry-name', type=str, default=None,
-                        help='The name for the extracted data entries. Dafault API_SHORT_NAME')
+                        help='The name for the extracted data entries. Dafault Bus_OASA')
+    
     args = parser.parse_args()
-    print(args)
+    #print(args)
 
-    publisher = ChouettePublisher(args.url, args.api_namespace, args.api_key, args.output_directory)
-    print(publisher)
-    publisher.get_triples(args.entry_name, args.save)
+    converter = Converter(args.output_directory)
+    print('Args: [', converter, ']')
+    converter.get_triples(args.entry_name, args.save)
